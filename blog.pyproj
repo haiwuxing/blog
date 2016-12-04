@@ -39,6 +39,7 @@
   <ItemGroup>
     <Content Include="requirements.txt" />
     <Content Include="templates\index.html" />
+    <Content Include="templates\post.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
