@@ -241,4 +241,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-env
+# added by Li Jian
+env/
+__pycache__/
