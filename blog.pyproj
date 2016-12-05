@@ -32,14 +32,18 @@
     <Compile Include="models.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="orm.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="templates\create_post.html" />
     <Content Include="templates\index.html" />
-    <Content Include="templates\post.html" />
+    <Content Include="templates\show_post.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
