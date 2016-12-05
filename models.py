@@ -5,7 +5,6 @@ Models for post
 import time;
 from datetime import date;
 
-
 class Post(object):
     """代表一篇博文"""
     def __init__(self, id=None, title=None, text=None):
