@@ -60,18 +60,32 @@ def add_post():
                     [request.form['title'],
                     request.form['text'],
                     post.created_at]);
-        db.commit()
+        db.commit();
         flash('New post was successfully posted')
         return redirect(url_for('index'));
 
 # Update a post.
-@app.route('/update/<int:post_id>', methods=['GET'])
+@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
 def update_post(post_id):
     """Update a post"""
     if not ('logged_in' in session):
         flash('还没有登陆');
         return redirect(url_for('index'));
-    return 'Update a post';
+    if request.method == 'GET':
+        db = get_db();
+        cur = db.execute('select id, title, text, created_at from posts where id=?',
+                         [post_id]);
+        post = cur.fetchone();
+        return render_template('update_post.html', post = post);
+    elif request.method == 'POST':
+        db = get_db();
+        db.execute('UPDATE posts SET title = ?, text = ?',
+                   (request.form['title'], request.form['text']));
+        db.commit();
+        flash('文章更新成功');
+        return redirect(url_for('show_post', post_id = post_id));
+    else:
+        abort('404')
 
 # Delete a post.
 @app.route('/delete/<int:post_id>', methods=['GET'])

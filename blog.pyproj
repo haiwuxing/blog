@@ -45,6 +45,7 @@
     <Content Include="templates\index.html" />
     <Content Include="templates\login.html" />
     <Content Include="templates\show_post.html" />
+    <Content Include="templates\update_post.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
