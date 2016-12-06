@@ -79,8 +79,8 @@ def update_post(post_id):
         return render_template('update_post.html', post = post);
     elif request.method == 'POST':
         db = get_db();
-        db.execute('UPDATE posts SET title = ?, text = ?',
-                   (request.form['title'], request.form['text']));
+        db.execute('UPDATE posts SET title = ?, text = ? WHERE id = ?',
+                   (request.form['title'], request.form['text'], post_id));
         db.commit();
         flash('文章更新成功');
         return redirect(url_for('show_post', post_id = post_id));
@@ -94,6 +94,9 @@ def delete_post(post_id):
     if not ('logged_in' in session):
         flash('还没有登陆');
         return redirect(url_for('index'));
+    db = get_db();
+    db.execute('DELETE FROM posts WHERE id=?', [post_id]);
+    db.commit();
     flash('Post was deleted');
     return redirect(url_for('index'));
     

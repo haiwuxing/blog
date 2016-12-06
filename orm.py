@@ -19,6 +19,7 @@ def get_db():
 @app.teardown_appcontext
 def close_db(error):
     """Closes the databse again at the end of the request."""
+    print('app.teardown_appcontext');
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close();
 
