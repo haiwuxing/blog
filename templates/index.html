@@ -21,8 +21,10 @@
             <li>
                 <p>{{ post.created_at}}</p>
                 <h2><a href="/retrieve/{{ post.id }}">{{ post.title }}</a></h2>
-                <a href="/update/{{ post.id }}">编辑</a>
-                <a href="/delete/{{ post.id }}">删除</a>
+                {% if session.logged_in %}
+                    <a href="/update/{{ post.id }}">编辑</a>
+                    <a href="/delete/{{ post.id }}">删除</a>
+                {% endif %}
             </li>
             {% else %}
                 <li><em>Unbelievable. No posts here fo far.</em></li>
