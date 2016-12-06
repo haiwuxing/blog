@@ -20,12 +20,20 @@
             {% for post in posts %}
             <li>
                 <p>{{ post.created_at}}</p>
-                <h2><a href="/post/{{ post.id }}">{{ post.title }}</a></h2>
+                <h2><a href="/retrieve/{{ post.id }}">{{ post.title }}</a></h2>
+                <a href="/update/{{ post.id }}">编辑</a>
+                <a href="/delete/{{ post.id }}">删除</a>
             </li>
             {% else %}
                 <li><em>Unbelievable. No posts here fo far.</em></li>
             {% endfor %}
         </ul>
+    </div>
+
+    <div>
+        {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
     </div>
 
     <footer>

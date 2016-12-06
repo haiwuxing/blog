@@ -14,12 +14,13 @@ def index():
     return render_template('index.html', posts = posts);
 
 # Retrieve a post.
-@app.route('/post/<int:post_id>', methods=['GET'] )
+@app.route('/retrieve/<int:post_id>', methods=['GET'] )
 def show_post(post_id):
     """Show a post"""
     # show the post with the given id, the id is an integer
     db = get_db();
-    cur = db.execute('select id, title, text, created_at from posts where id=?', [post_id]);
+    cur = db.execute('select id, title, text, created_at from posts where id=?',
+                     [post_id]);
     post = cur.fetchone();
     return render_template('show_post.html', post = post);
 
@@ -40,6 +41,15 @@ def add_post():
         return redirect(url_for('index'));
 
 # Update a post.
+@app.route('/update/<int:post_id>', methods=['GET'])
+def update_post(post_id):
+    """Update a post"""
+    return 'Update a post';
 
 # Delete a post.
+@app.route('/delete/<int:post_id>', methods=['GET'])
+def delete_post(post_id):
+    """Delete a post"""
+    flash('Post was deleted');
+    return redirect(url_for('index'));
     
