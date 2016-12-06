@@ -43,6 +43,7 @@
     <Content Include="requirements.txt" />
     <Content Include="templates\create_post.html" />
     <Content Include="templates\index.html" />
+    <Content Include="templates\login.html" />
     <Content Include="templates\show_post.html" />
   </ItemGroup>
   <ItemGroup>

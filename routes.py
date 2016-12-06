@@ -1,7 +1,28 @@
-from flask import Flask, render_template, request, flash, url_for, redirect;
+from flask import Flask, render_template, request, flash, url_for, redirect,\
+    session;
 from app import app;
 from models import *;
 from orm import *;
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'Invalid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('index'))
+    return render_template('login.html', error=error)
+ 
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('index'))
 
 @app.route('/')
 def index():
@@ -27,6 +48,9 @@ def show_post(post_id):
 # Create a post.
 @app.route('/add', methods=['GET', 'POST'])
 def add_post():
+    if not ('logged_in' in session):
+        flash('还没有登陆');
+        return redirect(url_for('index'));
     if request.method == 'GET':
         return render_template('create_post.html');
     elif request.method== 'POST':
@@ -44,12 +68,18 @@ def add_post():
 @app.route('/update/<int:post_id>', methods=['GET'])
 def update_post(post_id):
     """Update a post"""
+    if not ('logged_in' in session):
+        flash('还没有登陆');
+        return redirect(url_for('index'));
     return 'Update a post';
 
 # Delete a post.
 @app.route('/delete/<int:post_id>', methods=['GET'])
 def delete_post(post_id):
     """Delete a post"""
+    if not ('logged_in' in session):
+        flash('还没有登陆');
+        return redirect(url_for('index'));
     flash('Post was deleted');
     return redirect(url_for('index'));
     
