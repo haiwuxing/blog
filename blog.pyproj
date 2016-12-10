@@ -31,13 +31,13 @@
   <ItemGroup>
     <Compile Include="app.py" />
     <Compile Include="models.py" />
-    <Compile Include="orm.py" />
     <Compile Include="views.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="requirements.txt" />
     <Content Include="templates\create_post.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\login.html" />

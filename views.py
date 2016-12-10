@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, flash, url_for, redirect,\
     session;
 from app import app;
 from models import *;
-from orm import *;
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
