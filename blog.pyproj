@@ -32,7 +32,7 @@
     <Compile Include="app.py" />
     <Compile Include="models.py" />
     <Compile Include="orm.py" />
-    <Compile Include="routes.py" />
+    <Compile Include="views.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="templates\" />

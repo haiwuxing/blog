@@ -14,7 +14,7 @@ app.config.update(dict(
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 # import all of our routes from routes.py
-from routes import *
+from views import *;
 
 if __name__ == '__main__':
     app.run(debug=True);
