@@ -23,7 +23,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True);
     title = db.Column(db.String);
     body = db.Column(db.Text);
-    #created_at =  db.Column(db.DateTime, default=db.func.now());
+    created_at =  db.Column(db.DateTime, default=db.func.now());
 
     def __init__(self, title, body):
         self.title = title;
