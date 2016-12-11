@@ -12,7 +12,7 @@
             <dt>Title:</dt>
             <dd><input type="text" size="30" name="title" value="{{ post.title }}"/></dd>
             <dt>Text:</dt>
-            <dd><textarea name="text" rows="5" cols="40">{{ post.text|safe }}</textarea></dd>
+            <dd><textarea name="body" rows="5" cols="40">{{ post.body|safe }}</textarea></dd>
             <dd><input type="submit" value="发布" /></dd>
         </dl>
     </form>

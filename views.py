@@ -26,11 +26,7 @@ def logout():
 @app.route('/')
 def index():
     """Index"""
-    db = get_db();
-    cur = db.execute('select id, title, text, created_at from posts order by id desc');
-    posts = cur.fetchall();
-    # print(posts[0]['title']); // ok
-    # print(posts[0].title); // not ok
+    posts = Post.query.all();
     return render_template('index.html', posts = posts);
 
 # Retrieve a post.
@@ -38,10 +34,7 @@ def index():
 def show_post(post_id):
     """Show a post"""
     # show the post with the given id, the id is an integer
-    db = get_db();
-    cur = db.execute('select id, title, text, created_at from posts where id=?',
-                     [post_id]);
-    post = cur.fetchone();
+    post = Post.query.get(post_id);
     return render_template('show_post.html', post = post);
 
 # Create a post.
@@ -53,13 +46,9 @@ def add_post():
     if request.method == 'GET':
         return render_template('create_post.html');
     elif request.method== 'POST':
-        post = Post();
-        db = get_db();
-        db.execute('insert into posts (title, text, created_at) values (?,?,?)',
-                    [request.form['title'],
-                    request.form['text'],
-                    post.created_at]);
-        db.commit();
+        post = Post(request.form['title'], request.form['body']);
+        db.session.add(post);
+        db.session.commit();
         flash('New post was successfully posted')
         return redirect(url_for('index'));
 
@@ -71,16 +60,13 @@ def update_post(post_id):
         flash('还没有登陆');
         return redirect(url_for('index'));
     if request.method == 'GET':
-        db = get_db();
-        cur = db.execute('select id, title, text, created_at from posts where id=?',
-                         [post_id]);
-        post = cur.fetchone();
+        post = Post.query.get(post_id);
         return render_template('update_post.html', post = post);
     elif request.method == 'POST':
-        db = get_db();
-        db.execute('UPDATE posts SET title = ?, text = ? WHERE id = ?',
-                   (request.form['title'], request.form['text'], post_id));
-        db.commit();
+        post = Post.query.get(post_id);
+        post.title = request.form['title'];
+        post.body = request.form['body'];
+        db.session.commit();
         flash('文章更新成功');
         return redirect(url_for('show_post', post_id = post_id));
     else:
@@ -93,9 +79,9 @@ def delete_post(post_id):
     if not ('logged_in' in session):
         flash('还没有登陆');
         return redirect(url_for('index'));
-    db = get_db();
-    db.execute('DELETE FROM posts WHERE id=?', [post_id]);
-    db.commit();
+    post = Post.query.get(post_id);
+    db.session.delete(post);
+    db.session.commit();
     flash('Post was deleted');
     return redirect(url_for('index'));
     
