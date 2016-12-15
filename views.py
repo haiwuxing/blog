@@ -26,7 +26,7 @@ def logout():
 @app.route('/')
 def index():
     """Index"""
-    posts = Post.query.all();
+    posts = Post.query.order_by(Post.created_at.desc());
     return render_template('index.html', posts = posts);
 
 # Retrieve a post.
