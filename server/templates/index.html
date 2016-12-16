@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>李健的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="博客,个人博客">
+    <meta name="description" content="简单的个人博客">
+</head>
+<body>
+    <header>
+        <div>
+            <h1>XX'sBlog</h1>
+        </div>
+    </header>
+    <!--<h1>李健的博客</h1>-->
+    <div ng-app="">
+        <p>Name : <input type="text" ng-model="name"></p>
+        <h1>Hello {{name}}</h1>
+    </div>
+
+    <div>
+        <ul class="posts">
+            {% for post in posts %}
+            <li>
+                <p>{{ post.local_created_at() }}</p>
+                <h2><a href="/retrieve/{{ post.id }}">{{ post.title }}</a></h2>
+                {% if session.logged_in %}
+                    <a href="/update/{{ post.id }}">编辑</a>
+                    <a href="/delete/{{ post.id }}">删除</a>
+                {% endif %}
+            </li>
+            {% else %}
+                <li><em>Unbelievable. No posts here fo far.</em></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <footer>
+    </footer>
+</body>
+</html>

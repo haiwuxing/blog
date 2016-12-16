@@ -31,9 +31,13 @@
   <ItemGroup>
     <Compile Include="app.py" />
     <Compile Include="models.py" />
+    <Compile Include="serializers.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="views.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="static\" />
     <Folder Include="templates\" />
   </ItemGroup>
   <ItemGroup>

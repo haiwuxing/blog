@@ -38,6 +38,9 @@ class Post(db.Model):
         return self.created_at.replace(tzinfo=utctimezone).\
             astimezone(localtimezone).strftime(fmt);
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns};
+
 # 一些测试代码
 if __name__ == '__main__':
     post = Post('aaa','111');
@@ -48,3 +51,5 @@ if __name__ == '__main__':
     print(type(post.created_at));
     print(post.created_at.tzinfo);
     print(post.local_created_at());
+
+    print(post.as_dict());

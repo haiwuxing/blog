@@ -1,7 +1,16 @@
 from flask import Flask, render_template, request, flash, url_for, redirect,\
-    session;
+    session, jsonify;
 from app import app;
 from models import *;
+from serializers import PostSerializer;
+from marshmallow import Schema, fields, pprint;
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -84,4 +93,18 @@ def delete_post(post_id):
     db.session.commit();
     flash('Post was deleted');
     return redirect(url_for('index'));
-    
+
+
+# API
+# GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
+# GET:  http://[hostname]/api/v1.0/posts/[task_id]: Retrieve a post
+# POST: http://[hostname]/api/v1.0/posts: Create a new post
+# PUT:  http://[hostname]/api/v1.0/posts/[task_id]: Update an existing post
+# DELETE: http://[hostname]/api/v1.0/posts/[task_id]: Delete a post
+
+@app.route('/api/v1.0/posts', methods=['GET'])
+def get_posts():
+    posts = Post.query.order_by(Post.created_at.desc());
+    schema = PostSerializer();
+    result = schema.dump(posts, many=True);
+    return jsonify(result.data);
