@@ -3,7 +3,6 @@ from flask import Flask, render_template, request, flash, url_for, redirect,\
 from app import app;
 from models import *;
 from serializers import PostSerializer;
-from marshmallow import Schema, fields, pprint;
 
 @app.after_request
 def after_request(response):
@@ -108,3 +107,11 @@ def get_posts():
     schema = PostSerializer();
     result = schema.dump(posts, many=True);
     return jsonify(result.data);
+
+@app.route('/api/v1.0/posts/<int:post_id>', methods=['GET'])
+def get_a_post(post_id):
+    #post = Post.query.get(post_id);
+    post = Post.query.filter_by(id=post_id).first();
+    schema = PostSerializer();
+    result = schema.dump(post);
+    return jsonify(result[0]);
