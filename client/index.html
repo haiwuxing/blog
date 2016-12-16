@@ -17,49 +17,21 @@
     </header>
     <!--<h1>李健的博客</h1>-->
     <div ng-app="myApp" ng-controller="myCtrl">
-        <p>Name : <input type="text" ng-model="name"></p>
-        <h1>Hello {{name}}</h1>
-
         <ul>
-           
+           <li ng-repeat="post in posts">
+               <p>{{ post.created_at }}</p>
+               <h2><a href="#0">{{ post.title }}</a></h2>
+           </li>
         </ul>
     </div>
-
-    <div>
-        <ul class="posts">
-            {% for post in posts %}
-            <li>
-                <p>{{ post.local_created_at() }}</p>
-                <h2><a href="/retrieve/{{ post.id }}">{{ post.title }}</a></h2>
-                {% if session.logged_in %}
-                    <a href="/update/{{ post.id }}">编辑</a>
-                    <a href="/delete/{{ post.id }}">删除</a>
-                {% endif %}
-            </li>
-            {% else %}
-                <li><em>Unbelievable. No posts here fo far.</em></li>
-            {% endfor %}
-        </ul>
-
-    </div>
-
-    <div>
-        {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-        {% endfor %}
-    </div>
-
-    <footer>
-    </footer>
 
     <script>
         
         var app = angular.module("myApp", []);
         app.controller("myCtrl", function ($scope, $http) {
-            $http.get("http://127.0.0.1:5000")
+            $http.get("http://localhost:5000/api/v1.0/posts")
             .then(function (response) {
                 $scope.posts = response.data;
-                console.log(posts);
             });
         });
     </script>
