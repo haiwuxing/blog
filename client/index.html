@@ -17,12 +17,12 @@
     </header>
     <!--<h1>李健的博客</h1>-->
     <div ng-app="myApp" ng-controller="myCtrl">
-        <ul>
+       <ul>
            <li ng-repeat="post in posts">
                <p>{{ post.created_at }}</p>
-               <h2><a href="/retrieve/{{post.id}}">{{ post.title }}</a></h2>
+               <h2><a href="show_post.html">{{post.title}}</a></h2>
            </li>
-        </ul>
+       </ul>
     </div>
 
     <script>
@@ -30,10 +30,20 @@
         var app = angular.module("myApp", []);
         app.controller("myCtrl", function ($scope, $http) {
             $http.get("http://localhost:5000/api/v1.0/posts")
+            //$http.get("https://www.baidu.com/")
             .then(function (response) {
-                $scope.posts = response.data;
+                //console.log("Success");
+                $scope.posts = response.data.posts;
+                //console.log(response);
             });
         });
+        //app.config(function ($routeProvider) {
+        //    $routeProvider
+        //    .when("/london", {
+        //        templateUrl: "london.htm",
+        //        controller: "londonCtrl"
+        //    })
+        //});
     </script>
 </body>
 </html>

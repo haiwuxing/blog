@@ -35,6 +35,8 @@ def logout():
 def index():
     """Index"""
     posts = Post.query.order_by(Post.created_at.desc());
+    print(type(posts));
+    print("posts1={}" % posts);
     return render_template('index.html', posts = posts);
 
 # Retrieve a post.
@@ -101,17 +103,17 @@ def delete_post(post_id):
 # PUT:  http://[hostname]/api/v1.0/posts/[task_id]: Update an existing post
 # DELETE: http://[hostname]/api/v1.0/posts/[task_id]: Delete a post
 
-@app.route('/api/v1.0/posts', methods=['GET'])
+@app.route('/api/v1.0/posts/', methods=['GET'])
 def get_posts():
     posts = Post.query.order_by(Post.created_at.desc());
     schema = PostSerializer();
-    result = schema.dump(posts, many=True);
-    return jsonify(result.data);
+    data, errors = schema.dump(posts, many=True);
+    return jsonify({"posts": data});
 
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_a_post(post_id):
     #post = Post.query.get(post_id);
     post = Post.query.filter_by(id=post_id).first();
     schema = PostSerializer();
-    result = schema.dump(post);
-    return jsonify(result[0]);
+    data, errors = schema.dump(post);
+    return jsonify({"post":data});
