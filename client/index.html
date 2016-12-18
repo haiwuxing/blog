@@ -7,43 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="keywords" content="博客,个人博客">
     <meta name="description" content="简单的个人博客">
-    <script src="angular.min.js"></script>
+    <script src="js/angular/1.4.8/angular.min.js"></script>
+    <script src="js/angular/1.4.8/angular-route.js"></script>
 </head>
 <body>
-    <header>
-        <div>
-            <h1>XX'sBlog</h1>
+    <div class="blog-masthead">
+        <div class="container">
+            <nav class="container">
+                <a class="blog-nav-item" href="#">Home</a>
+            </nav>
         </div>
-    </header>
-    <!--<h1>李健的博客</h1>-->
-    <div ng-app="myApp" ng-controller="myCtrl">
-       <ul>
-           <li ng-repeat="post in posts">
-               <p>{{ post.created_at }}</p>
-               <h2><a href="show_post.html">{{post.title}}</a></h2>
-           </li>
-       </ul>
     </div>
 
-    <script>
-        
-        var app = angular.module("myApp", []);
-        app.controller("myCtrl", function ($scope, $http) {
-            $http.get("http://localhost:5000/api/v1.0/posts")
-            //$http.get("https://www.baidu.com/")
-            .then(function (response) {
-                //console.log("Success");
-                $scope.posts = response.data.posts;
-                //console.log(response);
-            });
-        });
-        //app.config(function ($routeProvider) {
-        //    $routeProvider
-        //    .when("/london", {
-        //        templateUrl: "london.htm",
-        //        controller: "londonCtrl"
-        //    })
-        //});
-    </script>
+    <div ng-app="blogApp">
+        <ng-view></ng-view>
+    </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
