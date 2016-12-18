@@ -18,4 +18,5 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True;
 from views import *;
 
 if __name__ == '__main__':
-    app.run(debug=True);
+    # 多线程，可以提高 AngularJS App 访问的速度。
+    app.run(debug=True, threaded=True);
