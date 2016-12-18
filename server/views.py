@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, url_for, redirect,\
-    session, jsonify;
+    session, jsonify, abort;
 from app import app;
 from models import *;
 from serializers import PostSerializer;
@@ -103,13 +103,33 @@ def delete_post(post_id):
 # PUT:  http://[hostname]/api/v1.0/posts/[task_id]: Update an existing post
 # DELETE: http://[hostname]/api/v1.0/posts/[task_id]: Delete a post
 
-@app.route('/api/v1.0/posts/', methods=['GET'])
-def get_posts():
-    posts = Post.query.order_by(Post.created_at.desc());
-    schema = PostSerializer();
-    data, errors = schema.dump(posts, many=True);
-    return jsonify({"posts": data});
+# GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
+# POST: http://[hostname]/api/v1.0/posts: Create a new post
+@app.route('/api/v1.0/posts/', methods=['GET', 'POST'])
+def get_or_add_posts():
+    if request.method == 'GET':
+        posts = Post.query.order_by(Post.created_at.desc());
+        schema = PostSerializer();
+        data, errors = schema.dump(posts, many=True);
+        return jsonify({"posts": data});
+    elif request.method == 'POST':
+        print("create a post1");
+        print(request.json);
+        if not request.json or not 'title' in request.json or not 'body' in request.json:
+            abort(404);
+        post = Post(request.json['title'], request.json['body']);
+        db.session.add(post);
+        db.session.commit();
+        # 查询并返回。
+        post = Post.query.get(post.id);
+        schema = PostSerializer();
+        data, errors = schema.dump(post);
+        return jsonify(data);
+    else:
+        abort(404);
+    
 
+# GET:  http://[hostname]/api/v1.0/posts/[task_id]: Retrieve a post
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_a_post(post_id):
     #post = Post.query.get(post_id);

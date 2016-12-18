@@ -10,15 +10,22 @@ app.config(function ($routeProvider) {
         templateUrl: "show_post.html",
         controller: "ShowPostController"
     })
+    .when("/add", {
+        templateUrl: "create_post.html",
+        controller: "CreatePostController"
+        //templateUrl: "show_post.html",
+        //controller: "ShowPostController"
+    })
     .otherwise({
         redirectTo: '/'
     });
 });
 
 app.controller("PostListController", function ($scope, $http) {
+    console.log("Get List:Start");
     $http.get("http://localhost:5000/api/v1.0/posts")
     .then(function (response) {
-        //console.log("Success");
+        console.log("Get List:Succuess");
         $scope.posts = response.data.posts;
         //console.log(response);
     });
@@ -32,4 +39,9 @@ app.controller("ShowPostController", function ($scope, $http, $routeParams) {
         $scope.post = response.data.post;
         console.log(response);
     });
+});
+
+app.controller("CreatePostController", function ($scope, $http) {
+    console.log("CreatePostController");
+    //$http.post("http://localhost:5000/api/v1.p/")
 });
