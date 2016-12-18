@@ -41,7 +41,30 @@ app.controller("ShowPostController", function ($scope, $http, $routeParams) {
     });
 });
 
-app.controller("CreatePostController", function ($scope, $http) {
+app.controller("CreatePostController", function ($scope, $http, $window) {
     console.log("CreatePostController");
-    //$http.post("http://localhost:5000/api/v1.p/")
+
+    // create a blank object to handle form data.
+    $scope.post = {};
+    // calling our submit function.
+    $scope.submitForm = function () {
+        // Posting data to php file
+        $http({
+            method: 'POST',
+            url: "http://localhost:5000/api/v1.0/posts/",
+            data: $scope.post,
+            headers: { 'Content-Type': 'application/json' }
+        })
+          .success(function (data) {
+              if (data.errors) {
+                  // Showing errors.
+                  $scope.errorName = data.errors.name;
+                  $scope.errorUserName = data.errors.username;
+                  $scope.errorEmail = data.errors.email;
+              } else {
+                  $scope.message = data.message;
+              }
+              $window.location.href = '/';
+          });
+    };
 });

@@ -113,8 +113,6 @@ def get_or_add_posts():
         data, errors = schema.dump(posts, many=True);
         return jsonify({"posts": data});
     elif request.method == 'POST':
-        print("create a post1");
-        print(request.json);
         if not request.json or not 'title' in request.json or not 'body' in request.json:
             abort(404);
         post = Post(request.json['title'], request.json['body']);

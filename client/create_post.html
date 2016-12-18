@@ -1,12 +1,12 @@
 ﻿<div class="container">
     <h1>Create a Post</h1>
-    <form action="{{ url_for('add_post') }}" method="post" class="add-post">
+    <form  class="add-post" ng-submit="submitForm()">
         <dl>
             <dt>Title:</dt>
-            <dd><input type="text" size="30" name="title" /></dd>
+            <dd><input type="text" size="30" name="title" ng-model="post.title" /></dd>
             <dt>Body:</dt>
-            <dd><textarea name="body" rows="5" cols="40"></textarea></dd>
-            <dd><input type="submit" value="发布" /></dd>
+            <dd><textarea name="body" rows="5" cols="40" ng-model="post.body"></textarea></dd>
+            <dd><input type="submit" value="发布" ng-click="processForm()"/></dd>
         </dl>
     </form>
 </div>
