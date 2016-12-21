@@ -130,8 +130,7 @@ def get_or_add_posts():
 # GET:  http://[hostname]/api/v1.0/posts/[task_id]: Retrieve a post
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_a_post(post_id):
-    #post = Post.query.get(post_id);
-    post = Post.query.filter_by(id=post_id).first();
+    post = Post.query.get(post_id);
     schema = PostSerializer();
     data, errors = schema.dump(post);
     return jsonify({"post":data});
