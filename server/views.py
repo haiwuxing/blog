@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, url_for, redirect,\
-    session, jsonify, abort;
+    session, jsonify, abort, make_response;
 from app import app;
 from models import *;
 from serializers import PostSerializer;
@@ -103,6 +103,10 @@ def delete_post(post_id):
 # PUT:  http://[hostname]/api/v1.0/posts/[task_id]: Update an existing post
 # DELETE: http://[hostname]/api/v1.0/posts/[task_id]: Delete a post
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404);
+
 # GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
 # POST: http://[hostname]/api/v1.0/posts: Create a new post
 @app.route('/api/v1.0/posts/', methods=['GET', 'POST'])
@@ -131,6 +135,8 @@ def get_or_add_posts():
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_a_post(post_id):
     post = Post.query.get(post_id);
+    if (post == None):
+        abort(404);
     schema = PostSerializer();
     data, errors = schema.dump(post);
     return jsonify({"post":data});
