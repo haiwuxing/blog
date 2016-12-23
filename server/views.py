@@ -62,25 +62,25 @@ def add_post():
         flash('New post was successfully posted')
         return redirect(url_for('index'));
 
-# Update a post.
-@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
-def update_post(post_id):
-    """Update a post"""
-    if not ('logged_in' in session):
-        flash('还没有登陆');
-        return redirect(url_for('index'));
-    if request.method == 'GET':
-        post = Post.query.get(post_id);
-        return render_template('update_post.html', post = post);
-    elif request.method == 'POST':
-        post = Post.query.get(post_id);
-        post.title = request.form['title'];
-        post.body = request.form['body'];
-        db.session.commit();
-        flash('文章更新成功');
-        return redirect(url_for('show_post', post_id = post_id));
-    else:
-        abort('404')
+## Update a post.
+#@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
+#def update_post(post_id):
+#    """Update a post"""
+#    if not ('logged_in' in session):
+#        flash('还没有登陆');
+#        return redirect(url_for('index'));
+#    if request.method == 'GET':
+#        post = Post.query.get(post_id);
+#        return render_template('update_post.html', post = post);
+#    elif request.method == 'POST':
+#        post = Post.query.get(post_id);
+#        post.title = request.form['title'];
+#        post.body = request.form['body'];
+#        db.session.commit();
+#        flash('文章更新成功');
+#        return redirect(url_for('show_post', post_id = post_id));
+#    else:
+#        abort('404')
 
 # Delete a post.
 @app.route('/delete/<int:post_id>', methods=['GET'])
@@ -155,4 +155,23 @@ def create_task():
     data, errors = schema.dump(post);
     return jsonify(data), 201;
 
-    
+@app.route('/api/v1.0/posts/<int:post_id>', methods=['PUT'])
+def update_post(post_id):
+    post = Post.query.get(post_id);
+    if post == None:
+        abort(404);
+    if not request.json:
+        abort(404);
+    if 'title' in request.json and type(request.json['title']) != str:
+        abort(400);
+    if 'body' in request.json and type(request.json['body']) != str:
+        abort(400);
+    post.title = request.json.get('title');
+    post.body = request.json.get('body');
+    db.session.commit();
+
+    # 查询并返回。
+    post = Post.query.get(post.id);
+    schema = PostSerializer();
+    data, errors = schema.dump(post);
+    return jsonify(data);
