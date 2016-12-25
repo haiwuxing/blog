@@ -3,6 +3,19 @@ from flask import Flask, render_template, request, flash, url_for, redirect,\
 from app import app;
 from models import *;
 from serializers import PostSerializer;
+from flask_httpauth import HTTPBasicAuth;
+
+auth = HTTPBasicAuth();
+
+@auth.get_password
+def get_password(username):
+    if username == 'jian':
+        return 'python'
+    return None
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 401);
 
 @app.after_request
 def after_request(response):
@@ -103,9 +116,28 @@ def delete_post(post_id):
 # PUT:  http://[hostname]/api/v1.0/posts/[task_id]: Update an existing post
 # DELETE: http://[hostname]/api/v1.0/posts/[task_id]: Delete a post
 
+#@auth.error_handler
+#def unauthorized():
+#    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
+#    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
+
+@app.errorhandler(400)
+def not_found(error):
+    return make_response(jsonify({'error': 'Bad request'}), 400);
+
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404);
+
+# generates a "public" version of a post to send to the client
+def make_public_post(post):
+    new_post = {};
+    for field in post:
+        if field == 'id':
+            new_post['uri'] = url_for('get_post', post_id=post['id'], _external=True);
+        else:
+            new_post[field] = post[field];
+    return new_post;
 
 # GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
 # POST: http://[hostname]/api/v1.0/posts: Create a new post
@@ -143,6 +175,7 @@ def get_post(post_id):
     return jsonify({'post':make_public_post(data)});
 
 @app.route('/api/v1.0/posts', methods=['POST'])
+@auth.login_required
 def create_post():
     # 400: bad request
     if not request.json or not 'title' in request.json or not 'body' in request.json:
@@ -157,6 +190,7 @@ def create_post():
     return jsonify({'post': make_public_post(data)}), 201;
 
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['PUT'])
+@auth.login_required
 def update_post(post_id):
     post = Post.query.get(post_id);
     if post == None:
@@ -178,6 +212,7 @@ def update_post(post_id):
     return jsonify({'post': make_public_post(data)});
 
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
+@auth.login_required
 def delte_post(post_id):
     post = Post.query.get(post_id);
     if post == None:
@@ -185,13 +220,3 @@ def delte_post(post_id):
     db.session.delete(post);
     db.session.commit();
     return jsonify({'result' : True});
-
-# generates a "public" version of a post to send to the client
-def make_public_post(post):
-    new_post = {};
-    for field in post:
-        if field == 'id':
-            new_post['uri'] = url_for('get_post', post_id=post['id'], _external=True);
-        else:
-            new_post[field] = post[field];
-    return new_post;
