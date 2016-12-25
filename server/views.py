@@ -175,3 +175,12 @@ def update_post(post_id):
     schema = PostSerializer();
     data, errors = schema.dump(post);
     return jsonify(data);
+
+@app.route('/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
+def delte_post(post_id):
+    post = Post.query.get(post_id);
+    if post == None:
+        abort(404);
+    db.session.delete(post);
+    db.session.commit();
+    return jsonify({'result' : 'true'});
