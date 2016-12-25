@@ -110,12 +110,13 @@ def not_found(error):
 # GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
 # POST: http://[hostname]/api/v1.0/posts: Create a new post
 @app.route('/api/v1.0/posts', methods=['GET'])
-def get_tasks():
+def get_posts():
     if request.method == 'GET':
         posts = Post.query.order_by(Post.created_at.desc());
         schema = PostSerializer();
         data, errors = schema.dump(posts, many=True);
-        return jsonify({"posts": data});
+        return jsonify({"posts": [make_public_post(post) for post in data]});
+        #return jsonify({"posts": map(make_public_post, posts)});
     elif request.method == 'POST':
         if not request.json or not 'title' in request.json or not 'body' in request.json:
             abort(404);
@@ -139,10 +140,10 @@ def get_post(post_id):
         abort(404);
     schema = PostSerializer();
     data, errors = schema.dump(post);
-    return jsonify({"post":data});
+    return jsonify({'post':make_public_post(data)});
 
 @app.route('/api/v1.0/posts', methods=['POST'])
-def create_task():
+def create_post():
     # 400: bad request
     if not request.json or not 'title' in request.json or not 'body' in request.json:
         abort(400);
@@ -153,7 +154,7 @@ def create_task():
     post = Post.query.get(post.id);
     schema = PostSerializer();
     data, errors = schema.dump(post);
-    return jsonify(data), 201;
+    return jsonify({'post': make_public_post(data)}), 201;
 
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
@@ -174,7 +175,7 @@ def update_post(post_id):
     post = Post.query.get(post.id);
     schema = PostSerializer();
     data, errors = schema.dump(post);
-    return jsonify(data);
+    return jsonify({'post': make_public_post(data)});
 
 @app.route('/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
 def delte_post(post_id):
@@ -183,4 +184,14 @@ def delte_post(post_id):
         abort(404);
     db.session.delete(post);
     db.session.commit();
-    return jsonify({'result' : 'true'});
+    return jsonify({'result' : True});
+
+# generates a "public" version of a post to send to the client
+def make_public_post(post):
+    new_post = {};
+    for field in post:
+        if field == 'id':
+            new_post['uri'] = url_for('get_post', post_id=post['id'], _external=True);
+        else:
+            new_post[field] = post[field];
+    return new_post;
