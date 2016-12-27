@@ -1,6 +1,7 @@
 from flask import Flask;
 
-app = Flask(__name__)
+# static_url_path="" serve static file in static folder.
+app = Flask(__name__, static_url_path="");
 app.config.from_object(__name__)
 
 # Load default config and override config from an environment variable
