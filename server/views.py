@@ -42,46 +42,30 @@ def make_public_post(post):
             new_post[field] = post[field];
     return new_post;
 
-# TODO: 将API改为/blog/api/v1.p/posts
-
-# API
-# GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
-# GET:  http://[hostname]/api/v1.0/posts/[task_id]: Retrieve a post
-# POST: http://[hostname]/api/v1.0/posts: Create a new post
-# PUT:  http://[hostname]/api/v1.0/posts/[task_id]: Update an existing post
-# DELETE: http://[hostname]/api/v1.0/posts/[task_id]: Delete a post
-
 #@auth.error_handler
 #def unauthorized():
 #    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
 #    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
 
-# GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
-# POST: http://[hostname]/api/v1.0/posts: Create a new post
-@app.route('/api/v1.0/posts', methods=['GET'])
+# API
+# GET:  http://[hostname]/blog/api/v1.0/posts/: 获取文章列表
+# GET:  http://[hostname]/blog/api/v1.0/posts/[task_id]: 读取一篇文章
+# POST: http://[hostname]/blog/api/v1.0/posts: 创建一篇文章
+# PUT:  http://[hostname]/blog/api/v1.0/posts/[task_id]: 更新一篇文章
+# DELETE: http://[hostname]/blog/api/v1.0/posts/[task_id]: 删除一篇文章
+
+# GET:  http://[hostname]/blog/api/v1.0/posts: 获取文章列表
+@app.route('/blog/api/v1.0/posts/', methods=['GET'])
 def get_posts():
     if request.method == 'GET':
         posts = Post.query.order_by(Post.created_at.desc());
         schema = PostSerializer();
         data, errors = schema.dump(posts, many=True);
         return jsonify({"posts": [make_public_post(post) for post in data]});
-    elif request.method == 'POST':
-        if not request.json or not 'title' in request.json or not 'body' in request.json:
-            abort(404);
-        post = Post(request.json['title'], request.json['body']);
-        db.session.add(post);
-        db.session.commit();
-        # 查询并返回。
-        post = Post.query.get(post.id);
-        schema = PostSerializer();
-        data, errors = schema.dump(post);
-        return jsonify(data);
-    else:
-        abort(404);
     
 
-# GET:  http://[hostname]/api/v1.0/posts/[task_id]: Retrieve a post
-@app.route('/api/v1.0/posts/<int:post_id>', methods=['GET'])
+# GET:  http://[hostname]/blog/api/v1.0/posts/[task_id]: 读取一篇文章
+@app.route('/blog/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_post(post_id):
     post = Post.query.get(post_id);
     if (post == None):
@@ -90,7 +74,8 @@ def get_post(post_id):
     data, errors = schema.dump(post);
     return jsonify({'post':make_public_post(data)});
 
-@app.route('/api/v1.0/posts', methods=['POST'])
+# POST: http://[hostname]/blog/api/v1.0/posts: 创建一篇文章
+@app.route('/blog/api/v1.0/posts', methods=['POST'])
 @auth.login_required
 def create_post():
     # 400: bad request
@@ -105,7 +90,8 @@ def create_post():
     data, errors = schema.dump(post);
     return jsonify({'post': make_public_post(data)}), 201;
 
-@app.route('/api/v1.0/posts/<int:post_id>', methods=['PUT'])
+# PUT:  http://[hostname]/blog/api/v1.0/posts/[task_id]: 更新一篇文章
+@app.route('/blog/api/v1.0/posts/<int:post_id>', methods=['PUT'])
 @auth.login_required
 def update_post(post_id):
     post = Post.query.get(post_id);
@@ -127,7 +113,8 @@ def update_post(post_id):
     data, errors = schema.dump(post);
     return jsonify({'post': make_public_post(data)});
 
-@app.route('/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
+# DELETE: http://[hostname]/blog/api/v1.0/posts/[task_id]: 删除一篇文章
+@app.route('/blog/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
 @auth.login_required
 def delte_post(post_id):
     post = Post.query.get(post_id);
