@@ -24,90 +24,25 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
-#@app.route('/login', methods=['GET', 'POST'])
-#def login():
-#    error = None
-#    if request.method == 'POST':
-#        if request.form['username'] != app.config['USERNAME']:
-#            error = 'Invalid username'
-#        elif request.form['password'] != app.config['PASSWORD']:
-#            error = 'Invalid password'
-#        else:
-#            session['logged_in'] = True
-#            flash('You were logged in')
-#            return redirect(url_for('index'))
-#    return render_template('login.html', error=error)
- 
-#@app.route('/logout')
-#def logout():
-#    session.pop('logged_in', None)
-#    flash('You were logged out')
-#    return redirect(url_for('index'))
+@app.errorhandler(400)
+def not_found(error):
+    return make_response(jsonify({'error': 'Bad request'}), 400);
 
-#@app.route('/')
-#def index():
-#    """Index"""
-#    posts = Post.query.order_by(Post.created_at.desc());
-#    print(type(posts));
-#    print("posts1={}" % posts);
-#    return render_template('index.html', posts = posts);
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404);
 
-## Retrieve a post.
-#@app.route('/retrieve/<int:post_id>', methods=['GET'] )
-#def show_post(post_id):
-#    """Show a post"""
-#    # show the post with the given id, the id is an integer
-#    post = Post.query.get(post_id);
-#    return render_template('show_post.html', post = post);
+# 将id  转换为 URI。
+def make_public_post(post):
+    new_post = {};
+    for field in post:
+        if field == 'id':
+            new_post['uri'] = url_for('get_post', post_id=post['id'], _external=True);
+        else:
+            new_post[field] = post[field];
+    return new_post;
 
-## Create a post.
-#@app.route('/add', methods=['GET', 'POST'])
-#def add_post():
-#    if not ('logged_in' in session):
-#        flash('还没有登陆');
-#        return redirect(url_for('index'));
-#    if request.method == 'GET':
-#        return render_template('create_post.html');
-#    elif request.method== 'POST':
-#        post = Post(request.form['title'], request.form['body']);
-#        db.session.add(post);
-#        db.session.commit();
-#        flash('New post was successfully posted')
-#        return redirect(url_for('index'));
-
-### Update a post.
-##@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
-##def update_post(post_id):
-##    """Update a post"""
-##    if not ('logged_in' in session):
-##        flash('还没有登陆');
-##        return redirect(url_for('index'));
-##    if request.method == 'GET':
-##        post = Post.query.get(post_id);
-##        return render_template('update_post.html', post = post);
-##    elif request.method == 'POST':
-##        post = Post.query.get(post_id);
-##        post.title = request.form['title'];
-##        post.body = request.form['body'];
-##        db.session.commit();
-##        flash('文章更新成功');
-##        return redirect(url_for('show_post', post_id = post_id));
-##    else:
-##        abort('404')
-
-## Delete a post.
-#@app.route('/delete/<int:post_id>', methods=['GET'])
-#def delete_post(post_id):
-#    """Delete a post"""
-#    if not ('logged_in' in session):
-#        flash('还没有登陆');
-#        return redirect(url_for('index'));
-#    post = Post.query.get(post_id);
-#    db.session.delete(post);
-#    db.session.commit();
-#    flash('Post was deleted');
-#    return redirect(url_for('index'));
-
+# TODO: 将API改为/blog/api/v1.p/posts
 
 # API
 # GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
@@ -121,24 +56,6 @@ def after_request(response):
 #    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
 #    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
 
-@app.errorhandler(400)
-def not_found(error):
-    return make_response(jsonify({'error': 'Bad request'}), 400);
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404);
-
-# generates a "public" version of a post to send to the client
-def make_public_post(post):
-    new_post = {};
-    for field in post:
-        if field == 'id':
-            new_post['uri'] = url_for('get_post', post_id=post['id'], _external=True);
-        else:
-            new_post[field] = post[field];
-    return new_post;
-
 # GET:  http://[hostname]/api/v1.0/posts: Retrieve list of posts
 # POST: http://[hostname]/api/v1.0/posts: Create a new post
 @app.route('/api/v1.0/posts', methods=['GET'])
@@ -148,7 +65,6 @@ def get_posts():
         schema = PostSerializer();
         data, errors = schema.dump(posts, many=True);
         return jsonify({"posts": [make_public_post(post) for post in data]});
-        #return jsonify({"posts": map(make_public_post, posts)});
     elif request.method == 'POST':
         if not request.json or not 'title' in request.json or not 'body' in request.json:
             abort(404);
